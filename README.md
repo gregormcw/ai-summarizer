@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # AI Summarizer
 
 A production-ready REST API for AI-powered text summarization, built with FastAPI and Anthropic's Claude API. Features clean architecture with dependency injection, comprehensive test coverage, and streaming support.
@@ -230,4 +229,3 @@ Built with:
 - [Anthropic Claude](https://www.anthropic.com/) - AI language model
 - [Pydantic](https://docs.pydantic.dev/) - Data validation
 - [pytest](https://docs.pytest.org/) - Testing framework
-EOF
