@@ -5,10 +5,7 @@ from pydantic import BaseModel, Field
 
 class StreamDelta(BaseModel):
     type: Literal["delta"] = "delta"
-    path: str = Field(
-        ...,
-        description="The path of the field being updated, e.g. 'summary', 'bullets[0]', 'actions[1]'.",
-    )
+    path: str = Field(..., description="The path of the field being updated, e.g. 'summary', 'bullets[0]', 'actions[1]'.")
     value: str = Field(..., description="Text to append at that path.")
 
 
