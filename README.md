@@ -5,10 +5,11 @@ A production-ready REST API for AI-powered text summarization, built with FastAP
 ## Features
 
 - **Three summarization styles**: `paragraph`, `bullet`, `tldr`
+- **Multiple input methods**: Direct text input or file upload (PDF, DOCX, TXT)
 - **Streaming support**: Server-Sent Events (SSE) for real-time token delivery
 - **Input validation**: Pydantic schemas with automatic error responses
 - **Provider-agnostic architecture**: Swap LLM providers without touching business logic
-- **Comprehensive tests**: 100% passing test suite with mocked API calls
+- **Comprehensive tests**: 15/15 passing tests with mocked API calls
 - **Auto-generated docs**: Interactive API documentation at `/docs`
 
 ## Architecture
@@ -107,6 +108,25 @@ curl -X POST http://localhost:8000/summarize/ \
 }
 ```
 
+### File Upload
+
+Upload PDF, DOCX, or TXT files for summarization:
+```bash
+curl -X POST http://localhost:8000/upload/ \
+  -F "file=@document.pdf" \
+  -F "style=bullet" \
+  -F "max_length=200"
+```
+
+**Supported file types:**
+- PDF (`.pdf`) - Extracted via PyMuPDF
+- Word Documents (`.docx`) - Extracted via python-docx
+- Text files (`.txt`) - Direct UTF-8 decoding
+
+**File size limit:** 10MB maximum
+
+**Response:** Same format as standard summarization endpoint 
+
 ### Streaming Summarization
 ```bash
 curl -X POST http://localhost:8000/summarize/stream \
@@ -179,8 +199,8 @@ Modern AI tools stream tokens as they're generated. The `/stream` endpoint provi
 
 ## Roadmap
 
+- [x] File upload support for PDF, DOCX, TXT
 - [ ] Redis caching to avoid re-summarizing identical text
-- [ ] PDF/DOCX upload support via file parsing
 - [ ] Simple HTML frontend for non-API usage
 - [ ] ASR/STT input for audio summarization
 - [ ] TTS output for accessibility
