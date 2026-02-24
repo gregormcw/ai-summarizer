@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from app.core.config import get_settings
 from app.core.logging import logger
 from app.routes.summarize import router as summarize_router
+from app.routes.upload import router as upload_router
 
 
 @asynccontextmanager
@@ -23,6 +24,7 @@ app = FastAPI(
     debug=settings.debug,
 )
 app.include_router(summarize_router)
+app.include_router(upload_router)
 
 
 @app.get("/health")
