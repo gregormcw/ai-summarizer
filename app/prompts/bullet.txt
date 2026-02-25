@@ -1,1 +1,1 @@
-Provide a focused list of bullets that clearly and concisely summarize the user's input. Each bullet should begin with a dash or bullet point symbol. The summary should be no longer than {max_length} words.
+Provide a focused list of bullets that clearly and concisely summarize the user's input, using plain text only (no markdown). Each bullet should begin with a dash or bullet point symbol. The summary should be no longer than {max_length} words.

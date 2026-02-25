@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>AI Summarizer</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-50 min-h-screen py-12 px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-gray-900 mb-2">
+                    AI Summarizer
+                </h1>
+            </div>
+            <!-- Main Card -->
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <!-- Tab Selection -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Enter text or upload a file
+                    </label>
+
+                    <div class="flex gap-2 mb-4">
+                        <button
+                            onclick="showTab('text')"
+                            id="textTab"
+                            class="px-4 py-2 rounded-md bg-blue-600 text-white"
+                        >
+                            Text Input
+                        </button>
+                        <button
+                            onclick="showTab('file')"
+                            id="fileTab"
+                            class="px-4 py-2 rounded-md bg-gray-200 text-gray-700"
+                        >
+                            Upload File
+                        </button>
+                    </div>
+                </div>
+                <!-- Text Input -->
+                <div id="textInput" class="mb-4">
+                    <textarea
+                        id="inputText"
+                        rows="10"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Paste your text here (minimum 50 characters)..."
+                    ></textarea>
+                </div>
+                <!-- File Upload -->
+                <div id="fileInput" class="hidden mb-4">
+                    <div
+                        class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center"
+                    >
+                        <input
+                            type="file"
+                            id="fileUpload"
+                            accept=".txt,.pdf,.docx"
+                            class="hidden"
+                            onchange="handleFile(event)"
+                        />
+                        <label for="fileUpload" class="cursor-pointer">
+                            <svg
+                                class="mx-auto h-12 w-12 text-gray-400"
+                                stroke="currentColor"
+                                fill="none"
+                                viewBox="0 0 48 48"
+                            >
+                                <path
+                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                                "
+                            </svg>
+                            <p class="mt-2 text-sm text-gray-600">
+                                Click to upload or drag and drop
+                            </p>
+                            <p class="text-xs text-gray-500">
+                                PDF, DOCX, or TXT (max 10MB)
+                            </p>
+                        </label>
+                        <p id="fileName" class="mt-2 text-sm text-gray-600"></p>
+                    </div>
+                </div>
+                <!-- Options -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-2"
+                            >Style</label
+                        >
+                        <select
+                            id="style"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="paragraph">Paragraph</option>
+                            <option value="bullet">Bullet Points</option>
+                            <option value="tldr">TL;DR</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-2"
+                            >Max Length (Words)</label
+                        >
+                        <input
+                            type="number"
+                            id="maxLength"
+                            value="200"
+                            min="50"
+                            max="1000"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                </div>
+                <!-- Submit -->
+                <button
+                    onclick="summarize()"
+                    id="submitBtn"
+                    class="w-full bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                    Summarize
+                </button>
+                <!-- Loading Spinner -->
+                <div id="loading" class="hidden mt-6 text-center">
+                    <div
+                        class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+                    ></div>
+                    <p class="mt-2 text-gray-600">Generating summary...</p>
+                </div>
+                <!-- Results -->
+                <div id="results" class="hidden mt-8">
+                    <div class="border-t border-gray-200 pt-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                            Summary
+                        </h3>
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <p
+                                id="summaryText"
+                                class="text-gray-800 whitespace-pre-wrap"
+                            ></p>
+                        </div>
+                        <div
+                            class="mt-4 flex justify-between text-sm text-gray-600"
+                        >
+                            <span
+                                >Original:
+                                <span
+                                    id="originalLength"
+                                    class="font-medium"
+                                ></span>
+                                words</span
+                            >
+                            <span
+                                >Summary:
+                                <span
+                                    id="summaryLength"
+                                    class="font-medium"
+                                ></span>
+                                words</span
+                            >
+                            <span
+                                >Model:
+                                <span id="modelUsed" class="font-medium"></span
+                            ></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Display -->
+                <div
+                    id="error"
+                    class="hidden mt-6 bg-red-50 border border-red-200 rounded-lg p-4"
+                >
+                    <p class="text-red-800 text-sm"></p>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="text-center mt-8 text-sm text-gray-600">
+                <p>
+                    <a href="/docs" class="text-blue-600 hover:underline"
+                        >API Documentation</a
+                    >
+                </p>
+            </div>
+        </div>
+        <script>
+            function showTab(tab) {
+                const textTab = document.getElementById("textTab");
+                const fileTab = document.getElementById("fileTab");
+                const textInput = document.getElementById("textInput");
+                const fileInput = document.getElementById("fileInput");
+
+                if (tab == "text") {
+                    textTab.className =
+                        "px-4 py-2 rounded-md bg-blue-600 text-white";
+                    fileTab.className =
+                        "px-4 py-2 rounded-md bg-gray-200 text-gray-700";
+                    textInput.classList.remove("hidden");
+                    fileInput.classList.add("hidden");
+                } else {
+                    fileTab.className =
+                        "px-4 py-2 rounded-md bg-blue-600 text-white";
+                    textTab.className =
+                        "px-4 py-2 rounded-md bg-gray-200 text-gray-700";
+                    fileInput.classList.remove("hidden");
+                    textInput.classList.add("hidden");
+                }
+            }
+
+            function handleFile(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    document.getElementById("fileName").textContent =
+                        `Selected: ${file.name}`;
+                }
+            }
+
+            async function summarize() {
+                const style = document.getElementById("style").value;
+                const maxLength = parseInt(
+                    document.getElementById("maxLength").value,
+                );
+
+                // Hide previous results/errors
+                document.getElementById("results").classList.add("hidden");
+                document.getElementById("error").classList.add("hidden");
+
+                // Show loading spinner, disable button
+                document.getElementById("loading").classList.remove("hidden");
+                document.getElementById("submitBtn").disabled = true;
+
+                try {
+                    // Determine which input method is active
+                    const textInput = document.getElementById("textInput");
+                    const fileInput = document.getElementById("fileInput");
+                    const isTextMode = !textInput.classList.contains("hidden");
+
+                    let response;
+
+                    if (isTextMode) {
+                        // Text mode
+                        const text = document.getElementById("inputText").value;
+
+                        if (!text || text.length < 50) {
+                            throw new Error(
+                                "Please enter at least 50 characters of text.",
+                            );
+                        }
+
+                        response = await fetch("/summarize/", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                text: text,
+                                style: style,
+                                max_length: maxLength,
+                            }),
+                        });
+                    } else {
+                        // File mode
+                        const fileUpload =
+                            document.getElementById("fileUpload");
+                        const file = fileUpload.files[0];
+
+                        if (!file) {
+                            throw new Error("Please select a file to upload.");
+                        }
+
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        formData.append("style", style);
+                        formData.append("max_length", maxLength);
+
+                        response = await fetch("/upload/", {
+                            method: "POST",
+                            body: formData,
+                        });
+                    }
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(
+                            error.detail ||
+                                `HTTP error! status: ${response.status}`,
+                        );
+                    }
+
+                    const data = await response.json();
+                    displayResults(data);
+                } catch (error) {
+                    showError(error.message);
+                } finally {
+                    document.getElementById("loading").classList.add("hidden");
+                    document.getElementById("submitBtn").disabled = false;
+                }
+            }
+
+            function displayResults(data) {
+                console.log("displayResults called with:", data);
+                document.getElementById("summaryText").textContent =
+                    data.summary;
+                document.getElementById("originalLength").textContent =
+                    data.prompt_length;
+                document.getElementById("summaryLength").textContent =
+                    data.summary_length;
+                document.getElementById("modelUsed").textContent = data.model;
+                document.getElementById("results").classList.remove("hidden");
+            }
+
+            function showError(message) {
+                const errorDiv = document.getElementById("error");
+                errorDiv.querySelector("p").textContent = message;
+                errorDiv.classList.remove("hidden");
+            }
+
+            // Drag and drop functionality
+            const dropZone = document.getElementById("fileInput");
+
+            // Prevent default drag behaviors on the whole document
+            ["dragenter", "dragover", "dragleave", "drop"].forEach(
+                (eventName) => {
+                    document.body.addEventListener(
+                        eventName,
+                        preventDefaults,
+                        false,
+                    );
+                },
+            );
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Highlight drop zone when dragging over it
+            ["dragenter", "dragover"].forEach((eventName) => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ["dragleave", "drop"].forEach((eventName) => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropZone
+                    .querySelector("div")
+                    .classList.add("border-blue-500", "bg-blue-50");
+            }
+
+            function unhighlight(e) {
+                dropZone
+                    .querySelector("div")
+                    .classList.remove("border-blue-500", "bg-blue-50");
+            }
+
+            // Handle dropped files
+            dropZone.addEventListener("drop", handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length > 0) {
+                    document.getElementById("fileUpload").files = files;
+                    handleFile({ target: { files: files } });
+                }
+            }
+        </script>
+    </body>
+</html>

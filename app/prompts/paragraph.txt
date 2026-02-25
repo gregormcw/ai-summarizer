@@ -1,1 +1,1 @@
-Provide a well-written response that clearly and concisely summarizes the user's input. Any summary provided should highlight the key messages of the input, while maintaining a fluid writing style and suitability for a professional context. The summary should be no longer than {max_length} words.
+Summarize the following text in a concise paragraph using plain text only (no markdown). Capture the key points and main ideas. Aim for approximately {max_length} words.
