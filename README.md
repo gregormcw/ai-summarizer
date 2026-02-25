@@ -83,6 +83,18 @@ conda activate ai-summarizer
 pip install -r requirements.txt
 ```
 
+## Using the Web Interface
+
+A user-friendly web interface is available at `http://localhost:8000/static/index.html` when the server is running.
+
+**Features:**
+- **Text input** - Paste text directly into the textarea
+- **File upload** - Upload PDF, DOCX, or TXT files (supports drag-and-drop)
+- **Style selection** - Choose paragraph, bullet points, or TL;DR format
+- **Real-time results** - See your summary with metadata (word counts, model used)
+
+The interface calls the same API endpoints documented at `/docs`.
+
 ## Usage
 
 ### Standard Summarization
