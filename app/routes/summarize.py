@@ -6,13 +6,19 @@ from fastapi.responses import StreamingResponse
 from app.clients.llm import LLMClient, get_llm_client
 from app.models.requests import SummarizeRequest
 from app.models.responses import SummaryResponse
+from app.services.cache import CacheService
 from app.services.summarizer import SummarizerService
+
+
+def get_cache_service() -> CacheService:
+    return CacheService()
 
 
 def get_summarizer_service(
     client: LLMClient = Depends(get_llm_client),
+    cache: CacheService = Depends(get_cache_service),
 ) -> SummarizerService:
-    return SummarizerService(llm=client)
+    return SummarizerService(llm=client, cache=cache)
 
 
 router = APIRouter(prefix="/summarize", tags=["summarize"])

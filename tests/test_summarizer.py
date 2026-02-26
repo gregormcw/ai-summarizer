@@ -17,6 +17,16 @@ class MockLLMClient(LLMClient):
         yield "This is a test summary."
 
 
+class MockCacheService:
+    """Mock cache that always returns None (cache miss)."""
+    
+    def get(self, text: str, style: str, max_length: int):
+        return None  # Always cache miss for testing
+    
+    def set(self, text: str, style: str, max_length: int, summary_data: dict):
+        pass  # Do nothing
+
+
 PROMPT: str = (
     "The 2024-2025 season was Liverpool Football Club's 133rd season in their history and their 63rd "
     "consecutive season in the top flight of English football. In addition to the domestic league, the club "
@@ -36,7 +46,8 @@ async def test_summarize_returns_summary():
         max_length=MAX_LENGTH,
         style=mock_style,
     )
-    service = SummarizerService(llm=mock_client)
+    mock_cache = MockCacheService()
+    service = SummarizerService(llm=mock_client, cache=mock_cache)
     summary = await service.summarize(request)
     assert isinstance(summary.summary, str) and summary.summary != ""
 
@@ -47,7 +58,8 @@ async def test_summarize_correct_style():
         max_length=MAX_LENGTH,
         style=mock_style,
     )
-    service = SummarizerService(llm=mock_client)
+    mock_cache = MockCacheService()
+    service = SummarizerService(llm=mock_client, cache=mock_cache)
     summary = await service.summarize(request)
     assert summary.style == mock_style
 
@@ -58,6 +70,7 @@ async def test_summarize_word_counts():
         max_length=MAX_LENGTH,
         style=mock_style,
     )
-    service = SummarizerService(llm=mock_client)
+    mock_cache = MockCacheService()
+    service = SummarizerService(llm=mock_client, cache=mock_cache)
     summary = await service.summarize(request)
     assert summary.prompt_length > 0 and summary.summary_length > 0

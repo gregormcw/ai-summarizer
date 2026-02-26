@@ -21,6 +21,13 @@ class Settings(BaseSettings):
     model: str = "claude-sonnet-4-6"
     max_tokens: int = 1024
 
+    # Redis
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_db: int = 0
+    redis_enabled: bool = True
+    cache_ttl: int = 86400  # 24 hours in seconds
+
     # Server
     host: str = "0.0.0.0"
     port: int = 8000
