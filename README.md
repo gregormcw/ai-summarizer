@@ -237,7 +237,7 @@ Modern AI tools stream tokens as they're generated. The `/stream` endpoint provi
 ## Roadmap
 
 - [x] File upload support for PDF, DOCX, TXT
-- [ ] Redis caching to avoid re-summarizing identical text
+- [x] Redis caching to avoid re-summarizing identical text
 - [ ] Simple HTML frontend for non-API usage
 - [ ] ASR/STT input for audio summarization
 - [ ] TTS output for accessibility
