@@ -137,7 +137,7 @@ curl -X POST http://localhost:8000/upload/ \
 
 **File size limit:** 10MB maximum
 
-**Response:** Same format as standard summarization endpoint 
+**Response:** Same format as standard summarization endpoint
 
 ### Streaming Summarization
 ```bash
@@ -150,6 +150,31 @@ curl -X POST http://localhost:8000/summarize/stream \
 ```
 
 Receives tokens progressively as Server-Sent Events.
+
+### Caching
+
+Redis caching is enabled by default to reduce API costs and improve response times.
+
+**How it works:**
+- Identical requests (same text, style, and max_length) return cached results
+- Cache entries expire after 24 hours (configurable via `CACHE_TTL`)
+- Cache hits are logged for monitoring
+
+**Requirements:**
+- Redis server running locally (install via `brew install redis` on macOS)
+- Start Redis: `brew services start redis`
+
+**Configuration:**
+Add to your `.env` file:
+```bash
+REDIS_ENABLED=true
+CACHE_TTL=86400  # 24 hours in seconds
+```
+
+**Disable caching** (for development/testing):
+```bash
+REDIS_ENABLED=false
+```
 
 ### Summarization Styles
 
