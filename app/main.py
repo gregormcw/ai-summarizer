@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from app.core.config import get_settings
 from app.core.logging import logger
 from app.routes.summarize import router as summarize_router
+from app.routes.transcribe import router as transcribe_router
 from app.routes.upload import router as upload_router
 
 
@@ -40,6 +41,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(summarize_router)
 app.include_router(upload_router)
+app.include_router(transcribe_router)
 
 
 @app.get("/health")

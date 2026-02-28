@@ -14,6 +14,7 @@ class SummaryResponse(BaseModel):
         default_factory=lambda: datetime.now(timezone.utc),
         description="The timestamp when the summary was generated.",
     )
+    audio_base64: str | None = None
 
 
 class StreamChunk(BaseModel):

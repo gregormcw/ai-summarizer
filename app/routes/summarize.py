@@ -1,25 +1,14 @@
+import base64
 import json
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 
-from app.clients.llm import LLMClient, get_llm_client
+from app.dependencies import get_audio_service, get_summarizer_service
 from app.models.requests import SummarizeRequest
 from app.models.responses import SummaryResponse
-from app.services.cache import CacheService
+from app.services.audio import AudioService
 from app.services.summarizer import SummarizerService
-
-
-def get_cache_service() -> CacheService:
-    return CacheService()
-
-
-def get_summarizer_service(
-    client: LLMClient = Depends(get_llm_client),
-    cache: CacheService = Depends(get_cache_service),
-) -> SummarizerService:
-    return SummarizerService(llm=client, cache=cache)
-
 
 router = APIRouter(prefix="/summarize", tags=["summarize"])
 
@@ -27,9 +16,17 @@ router = APIRouter(prefix="/summarize", tags=["summarize"])
 @router.post("/")
 async def summarize(
     request: SummarizeRequest,
+    tts: bool = False,
     service: SummarizerService = Depends(get_summarizer_service),
+    audio_service: AudioService = Depends(get_audio_service),
 ) -> SummaryResponse:
-    return await service.summarize(request)
+    summary_response = await service.summarize(request)
+
+    if tts:
+        audio_bytes = audio_service.text_to_speech(summary_response.summary)
+        summary_response.audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+
+    return summary_response
 
 
 @router.post("/stream")

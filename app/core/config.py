@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     model: str = "claude-sonnet-4-6"
     max_tokens: int = 1024
 
+    # OpenAI (for audio features)
+    openai_api_key: str | None = None
+    whisper_model: str = "whisper-1"
+    tts_model: str = "tts-1"
+    tts_voice: str = "alloy"
+
     # Redis
     redis_host: str = "localhost"
     redis_port: int = 6379

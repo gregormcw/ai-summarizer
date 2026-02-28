@@ -19,10 +19,10 @@ class MockLLMClient(LLMClient):
 
 class MockCacheService:
     """Mock cache that always returns None (cache miss)."""
-    
+
     def get(self, text: str, style: str, max_length: int):
         return None  # Always cache miss for testing
-    
+
     def set(self, text: str, style: str, max_length: int, summary_data: dict):
         pass  # Do nothing
 
