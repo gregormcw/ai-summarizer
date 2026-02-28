@@ -151,6 +151,26 @@ curl -X POST http://localhost:8000/summarize/stream \
 
 Receives tokens progressively as Server-Sent Events.
 
+### Audio Transcription
+
+Upload audio files for transcription and summarization:
+```bash
+curl -X POST http://localhost:8000/transcribe/ \
+  -F "file=@audio.mp3" \
+  -F "style=paragraph"
+```
+
+**Supported formats:** mp3, mp4, m4a, wav, webm (25MB max)
+
+**Optional TTS:** Add `?tts=true` to any endpoint to receive audio of the summary:
+```bash
+curl -X POST "http://localhost:8000/summarize/?tts=true" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Your text...", "style": "tldr"}'
+```
+
+The response includes an `audio_base64` field with base64-encoded mp3 audio.
+
 ### Caching
 
 Redis caching is enabled by default to reduce API costs and improve response times.
@@ -239,8 +259,8 @@ Modern AI tools stream tokens as they're generated. The `/stream` endpoint provi
 - [x] File upload support for PDF, DOCX, TXT
 - [x] Redis caching to avoid re-summarizing identical text
 - [x] Simple HTML frontend for non-API usage
-- [ ] ASR/STT input for audio summarization
-- [ ] TTS output for accessibility
+- [x] ASR/STT input for audio summarization
+- [x] TTS output for accessibility
 
 ## Environment Troubleshooting
 
