@@ -1,7 +1,7 @@
 import base64
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from app.dependencies import get_audio_service, get_summarizer_service
 from app.models.requests import SummarizeRequest
@@ -17,9 +17,9 @@ router = APIRouter(prefix="/transcribe", tags=["transcribe"])
 @router.post("/", response_model=SummaryResponse)
 async def transcribe_and_summarize(
     file: UploadFile = File(...),
-    style: str = "paragraph",
-    max_length: int = 200,
-    tts: bool = False,
+    style: str = Form("paragraph"),
+    max_length: int = Form(200),
+    tts: bool = Form(False),
     audio_service: AudioService = Depends(get_audio_service),
     summarizer_service: SummarizerService = Depends(get_summarizer_service),
 ) -> SummaryResponse:

@@ -1,6 +1,6 @@
 import base64
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from app.dependencies import (get_audio_service, get_file_parser,
                               get_summarizer_service)
@@ -17,9 +17,9 @@ router = APIRouter(prefix="/upload", tags=["upload"])
 @router.post("/", response_model=SummaryResponse)
 async def upload_and_summarize(
     file: UploadFile = File(...),
-    style: str = "paragraph",
-    max_length: int = 200,
-    tts: bool = False,
+    style: str = Form("paragraph"),
+    max_length: int = Form(200),
+    tts: bool = Form(False),
     parser: FileParser = Depends(get_file_parser),
     service: SummarizerService = Depends(get_summarizer_service),
     audio_service: AudioService = Depends(get_audio_service),

@@ -5,23 +5,53 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>AI Summarizer</title>
         <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Tailwind Config -->
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ["Inter", "system-ui", "sans-serif"],
+                            display: [
+                                "Space Grotesk",
+                                "system-ui",
+                                "sans-serif",
+                            ],
+                        },
+                    },
+                },
+            };
+        </script>
     </head>
     <body class="bg-gray-50 min-h-screen py-12 px-4">
         <div class="max-w-4xl mx-auto">
             <!-- Header -->
             <div class="text-center mb-12">
-                <h1 class="text-4xl font-bold text-gray-900 mb-2">
+                <h1
+                    class="text-5xl font-extrabold text-gray-900 mb-2 tracking-tight font-display"
+                >
                     AI Summarizer
                 </h1>
+                <p class="text-gray-600 text-lg">
+                    Transform text, documents, and audio into concise summaries
+                </p>
             </div>
             <!-- Main Card -->
             <div class="bg-white rounded-lg shadow-lg p-8">
                 <!-- Tab Selection -->
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Enter text or upload a file
-                    </label>
-
+                    <p class="text-sm text-gray-500 mb-3">
+                        Choose your input method
+                    </p>
                     <div class="flex gap-2 mb-4">
                         <button
                             onclick="showTab('text')"
@@ -36,6 +66,13 @@
                             class="px-4 py-2 rounded-md bg-gray-200 text-gray-700"
                         >
                             Upload File
+                        </button>
+                        <button
+                            onclick="showTab('audio')"
+                            id="audioTab"
+                            class="px-4 py-2 rounded-md bg-gray-200 text-gray-700"
+                        >
+                            Upload Audio
                         </button>
                     </div>
                 </div>
@@ -85,6 +122,45 @@
                         <p id="fileName" class="mt-2 text-sm text-gray-600"></p>
                     </div>
                 </div>
+                <!-- Audio Upload -->
+                <div id="audioInput" class="hidden mb-4">
+                    <div
+                        class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center"
+                    >
+                        <input
+                            type="file"
+                            id="audioUpload"
+                            accept=".mp3,.mp4,.m4a,.wav,.webm,.mpeg,.mpga"
+                            class="hidden"
+                            onchange="handleAudioFile(event)"
+                        />
+                        <label for="audioUpload" class="cursor-pointer">
+                            <svg
+                                class="mx-auto h-12 w-12 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                                />
+                            </svg>
+                            <p class="mt-2 text-sm text-gray-600">
+                                Click to upload or drag and drop
+                            </p>
+                            <p class="text-xs text-gray-500">
+                                MP3, WAV, M4A, or WebM (max 25 MB)
+                            </p>
+                        </label>
+                        <p
+                            id="audioFileName"
+                            class="mt-2 text-sm text-gray-600"
+                        ></p>
+                    </div>
+                </div>
                 <!-- Options -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div>
@@ -116,14 +192,28 @@
                         />
                     </div>
                 </div>
+                <div class="mb-4">
+                    <label class="flex items-center">
+                        <input
+                            type="checkbox"
+                            id="ttsEnabled"
+                            class="mr-2 h-4 w-4 text-blue-600 rounded"
+                        />
+                        <span class="text-sm font-medium text-gray-700"
+                            >Generate audio summary (TTS)</span
+                        >
+                    </label>
+                </div>
                 <!-- Submit -->
-                <button
-                    onclick="summarize()"
-                    id="submitBtn"
-                    class="w-full bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                    Summarize
-                </button>
+                <div class="mt-2">
+                    <button
+                        onclick="summarize()"
+                        id="submitBtn"
+                        class="w-full bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                        Summarize
+                    </button>
+                </div>
                 <!-- Loading Spinner -->
                 <div id="loading" class="hidden mt-6 text-center">
                     <div
@@ -142,6 +232,16 @@
                                 id="summaryText"
                                 class="text-gray-800 whitespace-pre-wrap"
                             ></p>
+                        </div>
+                        <!-- Audio Player (if TTS enabled) -->
+                        <div id="audioContainer" class="hidden mt-4">
+                            <label
+                                class="block text-sm font-medium text-gray-700 mb-2"
+                                >Audio Summary</label
+                            >
+                            <audio id="audioPlayer" controls class="w-full">
+                                Your browser does not support the audio element.
+                            </audio>
                         </div>
                         <div
                             class="mt-4 flex justify-between text-sm text-gray-600"
@@ -191,23 +291,36 @@
             function showTab(tab) {
                 const textTab = document.getElementById("textTab");
                 const fileTab = document.getElementById("fileTab");
+                const audioTab = document.getElementById("audioTab");
                 const textInput = document.getElementById("textInput");
                 const fileInput = document.getElementById("fileInput");
+                const audioInput = document.getElementById("audioInput");
+
+                // Reset all tabs to inactive
+                textTab.className =
+                    "px-4 py-2 rounded-md bg-gray-200 text-gray-700";
+                fileTab.className =
+                    "px-4 py-2 rounded-md bg-gray-200 text-gray-700";
+                audioTab.className =
+                    "px-4 py-2 rounded-md bg-gray-200 text-gray-700";
+
+                // Hide all inputs
+                textInput.classList.add("hidden");
+                fileInput.classList.add("hidden");
+                audioInput.classList.add("hidden");
 
                 if (tab == "text") {
                     textTab.className =
                         "px-4 py-2 rounded-md bg-blue-600 text-white";
-                    fileTab.className =
-                        "px-4 py-2 rounded-md bg-gray-200 text-gray-700";
                     textInput.classList.remove("hidden");
-                    fileInput.classList.add("hidden");
-                } else {
+                } else if (tab == "file") {
                     fileTab.className =
                         "px-4 py-2 rounded-md bg-blue-600 text-white";
-                    textTab.className =
-                        "px-4 py-2 rounded-md bg-gray-200 text-gray-700";
                     fileInput.classList.remove("hidden");
-                    textInput.classList.add("hidden");
+                } else if (tab == "audio") {
+                    audioTab.className =
+                        "px-4 py-2 rounded-md bg-blue-600 text-white";
+                    audioInput.classList.remove("hidden");
                 }
             }
 
@@ -219,11 +332,21 @@
                 }
             }
 
+            function handleAudioFile(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    document.getElementById("audioFileName").textContent =
+                        `Selected: ${file.name}`;
+                }
+            }
+
             async function summarize() {
                 const style = document.getElementById("style").value;
                 const maxLength = parseInt(
                     document.getElementById("maxLength").value,
                 );
+                const ttsEnabled =
+                    document.getElementById("ttsEnabled").checked;
 
                 // Hide previous results/errors
                 document.getElementById("results").classList.add("hidden");
@@ -237,7 +360,12 @@
                     // Determine which input method is active
                     const textInput = document.getElementById("textInput");
                     const fileInput = document.getElementById("fileInput");
+                    const audioInput = document.getElementById("audioInput");
+
                     const isTextMode = !textInput.classList.contains("hidden");
+                    const isFileMode = !fileInput.classList.contains("hidden");
+                    const isAudioMode =
+                        !audioInput.classList.contains("hidden");
 
                     let response;
 
@@ -251,18 +379,21 @@
                             );
                         }
 
-                        response = await fetch("/summarize/", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
+                        response = await fetch(
+                            `/summarize/?tts=${ttsEnabled}`,
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    text: text,
+                                    style: style,
+                                    max_length: maxLength,
+                                }),
                             },
-                            body: JSON.stringify({
-                                text: text,
-                                style: style,
-                                max_length: maxLength,
-                            }),
-                        });
-                    } else {
+                        );
+                    } else if (isFileMode) {
                         // File mode
                         const fileUpload =
                             document.getElementById("fileUpload");
@@ -276,11 +407,37 @@
                         formData.append("file", file);
                         formData.append("style", style);
                         formData.append("max_length", maxLength);
+                        formData.append("tts", ttsEnabled);
 
                         response = await fetch("/upload/", {
                             method: "POST",
                             body: formData,
                         });
+                    } else if (isAudioMode) {
+                        // Audio mode
+                        const audioUpload =
+                            document.getElementById("audioUpload");
+                        const file = audioUpload.files[0];
+
+                        if (!file) {
+                            throw new Error(
+                                "Please select an audio file to upload.",
+                            );
+                        }
+
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        formData.append("style", style);
+                        formData.append("max_length", maxLength);
+                        formData.append("tts", ttsEnabled);
+
+                        response = await fetch(
+                            `/transcribe/?tts=${ttsEnabled}`,
+                            {
+                                method: "POST",
+                                body: formData,
+                            },
+                        );
                     }
 
                     if (!response.ok) {
@@ -310,6 +467,21 @@
                 document.getElementById("summaryLength").textContent =
                     data.summary_length;
                 document.getElementById("modelUsed").textContent = data.model;
+
+                // Display audio server if TTS was enabled
+                if (data.audio_base64) {
+                    const audioPlayer = document.getElementById("audioPlayer");
+                    const audioSource = `data:audio/mpeg;base64,${data.audio_base64}`;
+                    audioPlayer.src = audioSource;
+                    document
+                        .getElementById("audioContainer")
+                        .classList.remove("hidden");
+                } else {
+                    document
+                        .getElementById("audioContainer")
+                        .classList.add("hidden");
+                }
+
                 document.getElementById("results").classList.remove("hidden");
             }
 
@@ -369,6 +541,48 @@
                 if (files.length > 0) {
                     document.getElementById("fileUpload").files = files;
                     handleFile({ target: { files: files } });
+                }
+            }
+
+            const audioDropZone = document.getElementById("audioInput");
+
+            ["dragenter", "dragover"].forEach((eventName) => {
+                audioDropZone.addEventListener(
+                    eventName,
+                    highlightAudio,
+                    false,
+                );
+            });
+
+            ["dragleave", "drop"].forEach((eventName) => {
+                audioDropZone.addEventListener(
+                    eventName,
+                    unhighlightAudio,
+                    false,
+                );
+            });
+
+            function highlightAudio(e) {
+                audioDropZone
+                    .querySelector("div")
+                    .classList.add("border-blue-500", "bg-blue-50");
+            }
+
+            function unhighlightAudio(e) {
+                audioDropZone
+                    .querySelector("div")
+                    .classList.remove("border-blue-500", "bg-blue-50");
+            }
+
+            audioDropZone.addEventListener("drop", handleAudioDrop, false);
+
+            function handleAudioDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length > 0) {
+                    document.getElementById("audioUpload").files = files;
+                    handleAudioFile({ target: { files: files } });
                 }
             }
         </script>
