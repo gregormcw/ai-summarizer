@@ -1,6 +1,11 @@
 # AI Summarizer
 
-A production-ready REST API for AI-powered text summarization, built with FastAPI and Anthropic's Claude API. Features clean architecture with dependency injection, comprehensive test coverage, and streaming support.
+[![CI](https://github.com/gregormcw/ai-summarizer/actions/workflows/ci.yml/badge.svg)](https://github.com/gregormcw/ai-summarizer/actions/workflows/ci.yml)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.129-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+A production-ready REST API for AI-powered text summarization, built with FastAPI. Features clean architecture with dependency injection, comprehensive test coverage, and streaming support.
 
 ## Features
 
